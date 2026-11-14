@@ -96,4 +96,10 @@ function updateAlerts(recent) {
   if (!playingAlert) playNextAlert();
 }
 
-async function refreshLeaders(){if(refreshing)return;refreshing=true;try{const response=await fetch(API,{cache:'no-store'});if(!response.ok)throw Error('API '+response.status);const data=await response.json();renderRanks('daily',data.day);renderRanks('weekly',data.week);if(!q.has('test'))updateAlerts(data.recent)}catch(err){console.warn('Liderlik verileri alınamadı',err)}finally{refreshing=false}}refreshLeaders();setInterval(refreshLeaders,15000);if(q.has('test'))setTimeout(()=>celebrate(q.get('sender')||'Örnek İzleyici',q.get('amount')||100,q.has('champ')),700);</script></body></html>
+async function refreshLeaders(){if(refreshing)return;refreshing=true;try{const response=await fetch(API,{cache:'no-store'});if(!response.ok)throw Error('API '+response.status);const data=await response.json();renderRanks('daily',data.day);renderRanks('weekly',data.week);if(!q.has('test'))updateAlerts(data.recent)}catch(err){console.warn('Liderlik verileri alınamadı',err)}finally{refreshing=false}}refreshLeaders();setInterval(refreshLeaders,15000);if(q.has('test')){
+  const button=document.createElement('button');
+  button.textContent='Kutlamayı sesli oynat';
+  button.style.cssText='position:fixed;bottom:8%;left:50%;transform:translateX(-50%);z-index:5;padding:12px 20px;border:0;border-radius:8px;background:#ffdc83;color:#211608;font-weight:bold';
+  button.addEventListener('click',()=>celebrate(q.get('sender')||'Örnek İzleyici',q.get('amount')||100,q.has('champ')));
+  document.body.append(button);
+}</script></body></html>
