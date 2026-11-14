@@ -94,3 +94,5 @@ jobs:
           curl -fsS -H "$auth" "$endpoint/schedules" | jq -e '.result.schedules | length > 0'
 
 # Deploy chat star rankings.
+
+# Deploy top-three chat rankings.
