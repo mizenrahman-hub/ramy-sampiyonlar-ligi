@@ -4,7 +4,8 @@ on:
     paths:
       - .github/workflows/cloudflare-access.yml
   workflow_dispatch:
-permissions: {}
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -51,3 +52,28 @@ jobs:
           path: |
             worker-rollback.json
             d1-bookmark.txt
+      - uses: actions/checkout@v4
+      - name: Deploy Worker preserving existing bindings
+        run: |
+          node --input-type=module --check < worker.js
+          api=https://api.cloudflare.com/client/v4
+          cf() { curl -fsS --max-time 30 -H "Authorization: Bearer $CF_TOKEN" "$api/$1"; }
+          account=$(cf 'accounts?per_page=50' | jq -er '.result[0].id')
+          database=$(cf "accounts/$account/d1/database?name=ramy-sampiyonlar-ligi-db" | jq -er '.result[] | select(.name=="ramy-sampiyonlar-ligi-db") | .uuid')
+          worker="$api/accounts/$account/workers/scripts/ramy-sampiyonlar-ligi-api"
+          cf "accounts/$account/workers/scripts/ramy-sampiyonlar-ligi-api/settings" |
+            jq -e --arg db "$database" '
+              .result as $s |
+              {main_module:"worker.js", compatibility_date:$s.compatibility_date,
+               compatibility_flags:($s.compatibility_flags // []), keep_bindings:["secret_text","secret_key"],
+               bindings:([($s.bindings // [])[] | select(.name!="DB" and .type!="secret_text" and .type!="secret_key") | {name,type:"inherit"}] + [{name:"DB",type:"d1",id:$db}]),
+               keep_assets:true, inherit_bindings:"strict"}' > metadata.json
+          curl -sS --max-time 60 -X PUT -H "Authorization: Bearer $CF_TOKEN" \
+            -F 'metadata=@metadata.json;type=application/json' \
+            -F 'worker.js=@worker.js;type=application/javascript+module' "$worker" |
+            jq -e 'if .success then true else (.errors | map(.code)), false end'
+      - name: Verify public API
+        run: |
+          origin=https://ramy-sampiyonlar-ligi-api.mizenrahman.workers.dev
+          curl -fsS --retry 3 "$origin/health" | jq -e '.database == "connected"'
+          curl -fsS "$origin/leaders" | jq -e '(.day|type=="array") and (.week|type=="array") and (.recent|type=="array")'
