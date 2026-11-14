@@ -92,3 +92,5 @@ jobs:
               --data '[{"cron":"*/2 * * * *"}]' "$endpoint/schedules" | jq -e '.success'
           fi
           curl -fsS -H "$auth" "$endpoint/schedules" | jq -e '.result.schedules | length > 0'
+
+# Deploy chat star rankings.
