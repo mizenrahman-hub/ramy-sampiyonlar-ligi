@@ -61,6 +61,35 @@ function amountTry(item, env) {
   if (!Number.isFinite(rate) || rate <= 0) throw new Error("Missing FX_" + currency + "_TRY rate");
   return Math.round(amount * rate * 100) / 100;
 }
+async function ensureChatSchema(db) {
+  await db.batch([
+    db.prepare("CREATE TABLE IF NOT EXISTS chat_points (id TEXT PRIMARY KEY, chat_id TEXT NOT NULL, author TEXT NOT NULL, name TEXT NOT NULL, fingerprint TEXT NOT NULL, sent INTEGER NOT NULL, UNIQUE(chat_id, author, fingerprint))"),
+    db.prepare("CREATE INDEX IF NOT EXISTS chat_points_author_time ON chat_points (author, sent)"),
+    db.prepare("CREATE INDEX IF NOT EXISTS chat_points_time ON chat_points (sent)")
+  ]);
+}
+async function scoreChat(db, chatId, items) {
+  const statements = [];
+  for (const item of items) {
+    const {snippet, authorDetails: author} = item;
+    if (snippet?.type !== "textMessageEvent" || !item.id || !author?.channelId || !author.displayName || author.isChatOwner) continue;
+    const normalized = (snippet.textMessageDetails?.messageText || "").normalize("NFKC")
+      .toLocaleLowerCase("tr").replace(/[^\p{L}\p{N}]+/gu, "");
+    const sent = Date.parse(snippet.publishedAt);
+    if (!normalized || !Number.isFinite(sent) || /nightbot|streamelements|streamlabs/i.test(author.displayName)) continue;
+    const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normalized));
+    const fingerprint = Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2,"0")).join("");
+    statements.push(db.prepare(
+      "INSERT OR IGNORE INTO chat_points SELECT ?,?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM chat_points WHERE author=? AND sent>? AND sent<?)"
+    ).bind(item.id,chatId,author.channelId,author.displayName,fingerprint,sent,author.channelId,sent-30000,sent+30000));
+  }
+  for (let i=0;i<statements.length;i+=50) await db.batch(statements.slice(i,i+50));
+}
+async function chatLeader(db, since) {
+  return await db.prepare(
+    "SELECT MAX(name) AS name, COUNT(*) AS points FROM chat_points WHERE sent >= ? GROUP BY author ORDER BY points DESC, MIN(sent), author LIMIT 1"
+  ).bind(Date.parse(since)).first();
+}
 async function poll(env) {
   const db = dbFor(env);
   if (!db) throw new Error("D1 binding not found");
@@ -77,6 +106,8 @@ async function poll(env) {
   });
   if (pageToken) params.set("pageToken", pageToken);
   const messages = await ytGet("liveChat/messages?" + params, token);
+  await ensureChatSchema(db);
+  await scoreChat(db, chatId, messages.items || []);
   let imported = 0;
   for (const item of messages.items || []) {
     if (item.snippet?.type !== "superChatEvent") continue;
@@ -136,7 +167,17 @@ export default {
       const recent = await db.prepare(
         "SELECT id, supporter_name AS name, amount_try AS amount FROM donations WHERE donated_at >= ? ORDER BY donated_at DESC, id DESC LIMIT 50"
       ).bind(new Date(Date.now() - 5 * 60_000).toISOString()).all();
-      return out({day,week,recent:recent.results || [],currency:"TRY",updated_at:new Date().toISOString()});
+      let chat = {day:null,week:null};
+      try {
+        const [daily, weekly] = await Promise.all([
+          chatLeader(db,periodStart("Europe/Istanbul",false)),
+          chatLeader(db,periodStart("Europe/Istanbul",true))
+        ]);
+        chat = {day:daily,week:weekly};
+      } catch (error) {
+        if (!String(error.message).includes("no such table")) console.error("Chat leaderboard query failed");
+      }
+      return out({day,week,chat,recent:recent.results || [],currency:"TRY",updated_at:new Date().toISOString()});
     } catch(e) {
       console.error("D1 query failed", String(e.message || e));
       return out(path === "/health"
