@@ -34,3 +34,20 @@ jobs:
           cf "accounts/$account/d1/database?name=ramy-sampiyonlar-ligi-db" |
             jq -e 'any(.result[]; .name == "ramy-sampiyonlar-ligi-db")' >/dev/null
           echo "D1 database accessible"
+      - name: Record production rollback points
+        run: |
+          api=https://api.cloudflare.com/client/v4
+          cf() { curl -fsS --max-time 20 -H "Authorization: Bearer $CF_TOKEN" "$api/$1"; }
+          account=$(cf 'accounts?per_page=50' | jq -er '.result[0].id')
+          database=$(cf "accounts/$account/d1/database?name=ramy-sampiyonlar-ligi-db" | jq -er '.result[] | select(.name=="ramy-sampiyonlar-ligi-db") | .uuid')
+          cf "accounts/$account/workers/scripts/ramy-sampiyonlar-ligi-api/deployments" |
+            jq -ce '.result.deployments[0] | {id,versions} | select(.id and (.versions|length>0))' > worker-rollback.json
+          cf "accounts/$account/d1/database/$database/time_travel/bookmark" |
+            jq -er '.result.bookmark | select(length>0)' > d1-bookmark.txt
+          echo "Worker deployment and D1 restore bookmark recorded"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ramy-cloudflare-rollback-points
+          path: |
+            worker-rollback.json
+            d1-bookmark.txt
