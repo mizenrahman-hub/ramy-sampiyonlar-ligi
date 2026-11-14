@@ -126,7 +126,7 @@ export default {
     if (!db) return out({status:"error",database:"disconnected",reason:"D1 binding not found"},503);
     try {
       if (path === "/health") {
-        await db.prepare("SELECT 1 AS test").first();
+        await db.prepare("SELECT id,supporter_id,supporter_name,amount_original,currency,amount_try,message,donated_at FROM donations LIMIT 1").first();
         return out({status:"ok",database:"connected"});
       }
       const [day,week] = await Promise.all([
@@ -135,7 +135,10 @@ export default {
       ]);
       return out({day,week,currency:"TRY",updated_at:new Date().toISOString()});
     } catch(e) {
-      return out({status:"error",reason:String(e.message || e)},503);
+      console.error("D1 query failed", String(e.message || e));
+      return out(path === "/health"
+        ? {status:"error",database:"disconnected"}
+        : {status:"error",reason:"Leaderboard unavailable"},503);
     }
   },
   async scheduled(event, env, ctx) {
