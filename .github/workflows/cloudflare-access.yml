@@ -77,3 +77,18 @@ jobs:
           origin=https://ramy-sampiyonlar-ligi-api.mizenrahman.workers.dev
           curl -fsS --retry 3 "$origin/health" | jq -e '.database == "connected"'
           curl -fsS "$origin/leaders" | jq -e '(.day|type=="array") and (.week|type=="array") and (.recent|type=="array")'
+      - name: Enable scheduled Super Chat polling
+        run: |
+          api=https://api.cloudflare.com/client/v4
+          auth="Authorization: Bearer $CF_TOKEN"
+          account=$(curl -fsS -H "$auth" "$api/accounts?per_page=50" | jq -er '.result[0].id')
+          endpoint="$api/accounts/$account/workers/scripts/ramy-sampiyonlar-ligi-api"
+          curl -fsS -H "$auth" "$endpoint/settings" | jq -e '
+            [.result.bindings[] | select(.type=="secret_text") | .name] as $names |
+            all(["YOUTUBE_CLIENT_ID","YOUTUBE_CLIENT_SECRET","YOUTUBE_REFRESH_TOKEN"][]; . as $name | $names | index($name) != null)'
+          schedules=$(curl -fsS -H "$auth" "$endpoint/schedules" | jq -ce '.result.schedules | map({cron})')
+          if [ "$schedules" = '[]' ]; then
+            curl -fsS -X PUT -H "$auth" -H 'Content-Type: application/json' \
+              --data '[{"cron":"*/2 * * * *"}]' "$endpoint/schedules" | jq -e '.success'
+          fi
+          curl -fsS -H "$auth" "$endpoint/schedules" | jq -e '.result.schedules | length > 0'
