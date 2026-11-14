@@ -66,14 +66,14 @@ async function poll(env) {
   if (!db) throw new Error("D1 binding not found");
   await ensureState(db);
   const token = await accessToken(env);
-  const broadcasts = await ytGet("liveBroadcasts?part=snippet&broadcastStatus=active&mine=true&maxResults=10", token);
+  const broadcasts = await ytGet("liveBroadcasts?part=snippet&broadcastStatus=active&broadcastType=all&maxResults=50", token);
   const active = (broadcasts.items || []).find(x => x.snippet?.liveChatId);
   if (!active) return {status:"no_active_broadcast", imported:0};
   const chatId = active.snippet.liveChatId;
   const key = "page:" + chatId;
   const pageToken = await stateGet(db, key);
   const params = new URLSearchParams({
-    liveChatId: chatId, part: "snippet,authorDetails", maxResults: "200"
+    liveChatId: chatId, part: "snippet,authorDetails", maxResults: "2000"
   });
   if (pageToken) params.set("pageToken", pageToken);
   const messages = await ytGet("liveChat/messages?" + params, token);
@@ -119,7 +119,7 @@ function periodStart(timeZone, week) {
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null,{status:204,headers:JSON_HEADERS});
-    const path = new URL(request.url).pathname.replace(/\\/$/,"") || "/";
+    const path = new URL(request.url).pathname.replace(/\/$/,"") || "/";
     if (path === "/") return out({system:"Ramy Şampiyonlar Ligi", status:"online"});
     if (path !== "/health" && path !== "/leaders") return out({error:"not_found"},404);
     const db = dbFor(env);
