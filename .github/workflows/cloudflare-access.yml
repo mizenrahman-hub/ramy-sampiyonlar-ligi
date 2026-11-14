@@ -23,3 +23,14 @@ jobs:
           echo "Cloudflare HTTP status: $status"
           jq -r '(.errors // [])[] | .code | numbers | "Cloudflare error code: \(.)"' "$body"
           jq -e '.success == true and .result.status == "active"' "$body"
+      - name: Check Worker and D1 access
+        run: |
+          api=https://api.cloudflare.com/client/v4
+          cf() { curl -fsS --max-time 20 -H "Authorization: Bearer $CF_TOKEN" "$api/$1"; }
+          account=$(cf 'accounts?per_page=50' | jq -er '.result | if length == 1 then .[0].id else error("Expected one accessible account") end')
+          cf "accounts/$account/workers/scripts/ramy-sampiyonlar-ligi-api/settings" |
+            jq -e '.success == true' >/dev/null
+          echo "Worker settings accessible"
+          cf "accounts/$account/d1/database?name=ramy-sampiyonlar-ligi-db" |
+            jq -e 'any(.result[]; .name == "ramy-sampiyonlar-ligi-db")' >/dev/null
+          echo "D1 database accessible"
