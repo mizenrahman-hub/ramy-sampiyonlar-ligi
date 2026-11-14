@@ -15,7 +15,11 @@ jobs:
       - name: Verify token without printing it
         run: |
           test -n "$CF_TOKEN" || { echo "Cloudflare secret missing"; exit 1; }
-          curl --silent --show-error --fail --max-time 20 \
+          body=$(mktemp)
+          trap 'rm -f "$body"' EXIT
+          status=$(curl --silent --show-error --max-time 20 -o "$body" -w '%{http_code}' \
             -H "Authorization: Bearer $CF_TOKEN" \
-            https://api.cloudflare.com/client/v4/user/tokens/verify |
-            jq -e '.success == true and .result.status == "active"'
+            https://api.cloudflare.com/client/v4/user/tokens/verify)
+          echo "Cloudflare HTTP status: $status"
+          jq -r '(.errors // [])[] | .code | numbers | "Cloudflare error code: \(.)"' "$body"
+          jq -e '.success == true and .result.status == "active"' "$body"
