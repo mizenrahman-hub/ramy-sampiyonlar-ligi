@@ -70,7 +70,7 @@ async function sound(tier) {
     console.warn('Kutlama sesi çalınamadı', error);
   }
 }
-function celebrate(name,amount,champ){const n=Number(amount)||0,legend=n>=1000;safe('title',legend?'👑 EFSANE ŞAMPİYON!':champ?'👑 YENİ ŞAMPİYON!':'🎉 SÜPER CHAT!');safe('subtitle',legend?'BU GECEYE DAMGA VURDUN!':n>=500?'SÜPER ŞAMPİYON!':n>=100?'YENİ YILDIZIMIZ SAHNEDE!':'Bıdık’ın mama parası çıkmak üzere… Bir pati kaldı!');safe('sender',name);safe('money',money(n));const el=document.getElementById('alert'),cf=document.getElementById('confetti');el.dataset.tier=legend?'legend':n>=500?'gold':n>=100?'silver':'bronze';el.style.setProperty('--angle',(75+Math.random()*65)+'deg');cf.replaceChildren();for(let i=0;i<(legend?96:n>=500?64:n>=100?36:14);i++){let p=document.createElement('i');p.className='piece';p.style.left=(Math.random()*100)+'%';p.style.animationDelay=(Math.random()*1.5)+'s';p.style.setProperty('--dx',((Math.random()-.5)*250)+'px');cf.appendChild(p)}el.classList.toggle('legend',legend);el.classList.add('show');void sound(el.dataset.tier);clearTimeout(window.alertTimeout);window.alertTimeout=setTimeout(()=>{el.classList.remove('show');el.classList.remove('legend')},legend?10000:n>=500?7000:n>=100?5000:3000)}
+function celebrate(name,amount,champ){const n=Number(amount)||0,legend=n>=1000;safe('title',legend?'👑 EFSANE ŞAMPİYON!':champ?'👑 YENİ ŞAMPİYON!':'🎉 SÜPER CHAT!');safe('subtitle',legend?'BU GECEYE DAMGA VURDUN!':n>=500?'SÜPER ŞAMPİYON!':n>=100?'YENİ YILDIZIMIZ SAHNEDE!':'Bıdık’ın mama parası çıkmak üzere… Bir pati kaldı!');safe('sender',name);safe('money',money(n));const el=document.getElementById('alert'),cf=document.getElementById('confetti');el.dataset.tier=legend?'legend':n>=500?'gold':n>=100?'silver':'bronze';el.style.setProperty('--angle',(75+Math.random()*65)+'deg');cf.replaceChildren();for(let i=0;i<(legend?96:n>=500?64:n>=100?36:14);i++){let p=document.createElement('i');p.className='piece';p.style.left=(Math.random()*100)+'%';p.style.animationDelay=(Math.random()*1.5)+'s';p.style.setProperty('--dx',((Math.random()-.5)*250)+'px');cf.appendChild(p)}el.classList.toggle('legend',legend);el.classList.add('show');void sound(el.dataset.tier);clearTimeout(window.alertTimeout);window.alertTimeout=setTimeout(()=>{el.classList.remove('show');el.classList.remove('legend')},legend?10000:n>=500?7000:n>=100?5000:6000)}
 const API='https://ramy-sampiyonlar-ligi-api.mizenrahman.workers.dev/leaders';function renderRanks(board,items){const el=document.getElementById(board);if(!el)return;el.replaceChildren();const medals=['🥇','🥈','🥉'];for(let i=0;i<3;i++){const row=document.createElement('div');row.className='rank';const item=Array.isArray(items)?items[i]:null;const name=document.createElement('span');name.textContent=item?.name||item?.supporter_name||'Henüz yok';const amount=document.createElement('b');amount.textContent=item&&Number.isFinite(Number(item.amount??item.total_try))?money(item.amount??item.total_try):'—';if (i === 0 && item?.name) {
   const crown = document.createElement('i');
   crown.className = 'leader-crown';
@@ -93,7 +93,7 @@ function playNextAlert() {
   }
   playingAlert = true;
   celebrate(donation.name, donation.amount, false);
-  const duration = donation.amount >= 1000 ? 10000 : donation.amount >= 500 ? 7000 : donation.amount >= 100 ? 5000 : 3000;
+  const duration = donation.amount >= 1000 ? 10000 : donation.amount >= 500 ? 7000 : donation.amount >= 100 ? 5000 : 6000;
   setTimeout(playNextAlert, duration + 250);
 }
 
