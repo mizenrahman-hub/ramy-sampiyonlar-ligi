@@ -111,7 +111,7 @@ function periodStart(timeZone, week) {
   // Date starts at midnight in Turkey (UTC+03 year-round).
   const day = new Date(Date.UTC(Number(v.year),Number(v.month)-1,Number(v.day),-3));
   if (week) {
-    const offset = (day.getUTCDay()+6)%7;
+    const offset = ({Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6})[v.weekday];
     day.setUTCDate(day.getUTCDate()-offset);
   }
   return day.toISOString();
