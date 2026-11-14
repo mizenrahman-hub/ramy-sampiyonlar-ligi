@@ -133,7 +133,10 @@ export default {
         leaderboard(db,periodStart("Europe/Istanbul",false)),
         leaderboard(db,periodStart("Europe/Istanbul",true))
       ]);
-      return out({day,week,currency:"TRY",updated_at:new Date().toISOString()});
+      const recent = await db.prepare(
+        "SELECT id, supporter_name AS name, amount_try AS amount FROM donations WHERE donated_at >= ? ORDER BY donated_at DESC, id DESC LIMIT 50"
+      ).bind(new Date(Date.now() - 5 * 60_000).toISOString()).all();
+      return out({day,week,recent:recent.results || [],currency:"TRY",updated_at:new Date().toISOString()});
     } catch(e) {
       console.error("D1 query failed", String(e.message || e));
       return out(path === "/health"
