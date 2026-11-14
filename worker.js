@@ -86,9 +86,10 @@ async function scoreChat(db, chatId, items) {
   for (let i=0;i<statements.length;i+=50) await db.batch(statements.slice(i,i+50));
 }
 async function chatLeader(db, since) {
-  return await db.prepare(
-    "SELECT MAX(name) AS name, COUNT(*) AS points FROM chat_points WHERE sent >= ? GROUP BY author ORDER BY points DESC, MIN(sent), author LIMIT 1"
-  ).bind(Date.parse(since)).first();
+  const result = await db.prepare(
+    "SELECT MAX(name) AS name, COUNT(*) AS points FROM chat_points WHERE sent >= ? GROUP BY author ORDER BY points DESC, MIN(sent), author LIMIT 3"
+  ).bind(Date.parse(since)).all();
+  return result.results || [];
 }
 async function poll(env) {
   const db = dbFor(env);
@@ -167,7 +168,7 @@ export default {
       const recent = await db.prepare(
         "SELECT id, supporter_name AS name, amount_try AS amount FROM donations WHERE donated_at >= ? ORDER BY donated_at DESC, id DESC LIMIT 50"
       ).bind(new Date(Date.now() - 5 * 60_000).toISOString()).all();
-      let chat = {day:null,week:null};
+      let chat = {day:[],week:[]};
       try {
         const [daily, weekly] = await Promise.all([
           chatLeader(db,periodStart("Europe/Istanbul",false)),
