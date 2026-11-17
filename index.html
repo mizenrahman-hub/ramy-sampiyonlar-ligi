@@ -386,7 +386,170 @@ function showCrownChange(boards, name) {
   for (const board of activeBoards) document.getElementById(board).closest('.leader').classList.add('crown-changing');
   crownDismissal = setTimeout(reset, CROWN_DURATION_MS);
 }
-const donationStages = [{"amount":2500,"title":"TAÇ TÖRENİ","color":"#fff2c4","mark":"♚","lines":["{name}, bu sahneyi yıllarca anlatsak yeri!","{name}, final ışıkları senin için yandı!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":2000,"title":"YILDIZ GEÇİDİ","color":"#a9e9ff","mark":"✶","lines":["{name}, şimdi bir yıldız geçidi de senin için!","Kamera açık, ışıklar hazır. Teşekkürler, {name}!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":1500,"title":"MOR IŞIKLAR","color":"#d9adff","mark":"✷","lines":["{name}, bu geceyi hatırlayınca bu an da aklımıza gelecek!","Sohbetin alkışı mor ışıklara karıştı, {name}!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":1000,"title":"YAKUT SAHNE","color":"#ff8397","mark":"◆","lines":["{name}, bu geceye güzel bir an bıraktın!","Işıklar yakut, alkışlar senin, {name}!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":500,"title":"KRALİYET ALKIŞI","color":"#ffe598","mark":"✺","lines":["{name}, bu anı yayının hatırasına yazdık!","Ramy, bu alkışa bir yakın plan!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":400,"title":"TAÇ SAHNEDE","color":"#ffa676","mark":"♛","lines":["Taç hazır, isim belli. Teşekkürler, {name}!","{name}, bu alkış kameraya sığmadı!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":300,"title":"ALTIN SELAM","color":"#ffda70","mark":"❧","lines":["{name}, bu ismi küçük yazmayın!","Altın bir selam da bizden sana, {name}!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":200,"title":"SAHNE SENİN","color":"#d5eaff","mark":"✧","lines":["{name}, ışıkçı hazır. Bu sahne senin!","Bir anlığına bütün spotlar sana döndü, {name}!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]},{"amount":100,"title":"SICAK BİR ALKIŞ","color":"#eeb584","mark":"✦","lines":["{name}, yayına güzel bir enerji kattın!","Sohbet, {name} için bir alkış alalım!","Sohbet, bu güzel ana bir 👏 bırakalım!","{name}, iyi ki bu yayındasın!","Bu alkış ekranın öbür ucuna kadar gitsin!","{name}, kocaman teşekkürler!","Bu anı bizimle paylaştığın için sağ ol, {name}!","Ramy, gülümsemeyi de kayda aldın mı?"]}];
+const donationStages = [
+  {
+    "amount": 2500,
+    "title": "TAÇ TÖRENİ",
+    "color": "#fff2c4",
+    "mark": "♚",
+    "lines": [
+      "{name}, tören başladı. Bıdık protokolü çiğnedi, pati verdi.",
+      "Taç töreni hazır. Tahtta Bıdık uyuyor.",
+      "Ramy, fermanı ters tutuyorsun. Alkış doğru yönde.",
+      "{name}, final ışıkları yandı. Jeneriğe Bıdık da yazıldı.",
+      "Saray bandosu sustu. Çay kaşıkları devraldı.",
+      "{name}, bu anı sakladık. Bıdık kutusunu aldı.",
+      "Taç teslim edildi. Pati mührü basıldı.",
+      "Ramy, tahtı çekme. Altında Bıdık var.",
+      "Finale konfeti dedik. Bıdık kar yağdı sandı.",
+      "{name}, törenden hatıra bir alkış ve bol gülümseme."
+    ]
+  },
+  {
+    "amount": 2000,
+    "title": "YILDIZ GEÇİDİ",
+    "color": "#a9e9ff",
+    "mark": "✶",
+    "lines": [
+      "{name}, yıldızlar sıraya girdi. Bıdık öne geçti.",
+      "Bir yıldız kaydı. Ramy dilek yerine çay istedi.",
+      "Yıldız geçidi hazır. Teleskop şart değil.",
+      "{name}, gökyüzü kadraja sığmadı. Alkış sığdı.",
+      "Ramy, o kayan yıldız. Kumanda çalışmaz.",
+      "Yıldızlar geldi, Bıdık ayı mama kabı sandı.",
+      "{name}, bu sahne uzaydan görülür. Alkışı da oraya yollarız.",
+      "Sohbet, yıldızları saymayın. Biri sürekli yer değiştiriyor.",
+      "Yer çekimi izin verdi. Alkış yukarı çıkabilir.",
+      "{name}, bu geceye yıldızlı bir teşekkür!"
+    ]
+  },
+  {
+    "amount": 1500,
+    "title": "MOR IŞIKLAR",
+    "color": "#d9adff",
+    "mark": "✷",
+    "lines": [
+      "{name}, mor ışıkları açtık. Bıdık disco sandı.",
+      "Ramy, mor ışıkta çay hâlâ çay.",
+      "Mor sahne hazır, dans etmek opsiyonel.",
+      "{name}, bu mor ışıkta alkış bile renk değiştirdi.",
+      "Bıdık dans etmiyor. Ritimle kuyruk sallıyor.",
+      "Mor ışık gelsin dedik. Ramy lavanta getirdi.",
+      "{name}, bu geceye mor bir imza attın!",
+      "Sohbet, disko topu yok. Çay kaşığı parlıyor.",
+      "Mor ışıklar yandı. Bıdık gözlüğünü arıyor.",
+      "Ramy, bu ışıkta herkes klip çekiyor gibi."
+    ]
+  },
+  {
+    "amount": 1000,
+    "title": "YAKUT SAHNE",
+    "color": "#ff8397",
+    "mark": "◆",
+    "lines": [
+      "{name}, yakutlar sahnede. Bıdık onları top sandı.",
+      "Ramy, yakutu cebine koyma. Dekor o.",
+      "Yakut ışıkları yandı. Çay bardağı bile parladı.",
+      "{name}, bu sahneye rubin gibi bir renk kattın!",
+      "Yakut parladı, kamera otomatik iltifat etti.",
+      "Sohbet, alkışı tutun. Yakutlar yuvarlanıyor.",
+      "{name}, bu kırmızı halıya bir gülümseme yakışır.",
+      "Yakutları saydık. Bıdık sayımı bozdu.",
+      "Ramy, yakut rengi dedik. Domates getirmişsin.",
+      "{name}, bu sahnenin kırmızısı mutluluktan."
+    ]
+  },
+  {
+    "amount": 500,
+    "title": "KRALİYET ALKIŞI",
+    "color": "#ffe598",
+    "mark": "✺",
+    "lines": [
+      "{name}, kraliyet alkışı başladı. Bıdık tempo tutuyor.",
+      "Saray bandosu yolda. Şimdilik Ramy ıslık çalıyor.",
+      "Kırmızı halıyı serdik. Bıdık çoktan üstünde.",
+      "{name}, tören başladı. Kravat isteğe bağlı.",
+      "Ramy, fermanı bırak. Önce teşekkür et!",
+      "Kraliyet selamı geldi. Bir pati de kenardan.",
+      "{name}, bu alkışa salon küçük geldi.",
+      "Saray kapısı açıldı. İçeriden çay kokusu geldi.",
+      "Bu törenin en ciddi üyesi Bıdık. Uyuyor.",
+      "{name}, şeref konuğu sensin. Koltuğu Bıdık’la paylaşacaksın."
+    ]
+  },
+  {
+    "amount": 400,
+    "title": "TAÇ SAHNEDE",
+    "color": "#ffa676",
+    "mark": "♛",
+    "lines": [
+      "{name}, taç hazır. Bıdık önce kokladı.",
+      "Taç biraz yamuk. Karizma yerinde.",
+      "Ramy, tacı düz tut. Fotoğraf çekiliyor!",
+      "{name}, taç sana oldu. Ramy daha deniyordu.",
+      "Saray protokolü iptal. Alkış serbest!",
+      "Taç geldi, Bıdık yine koltuğu bırakmadı.",
+      "{name}, tacı kutudan çıkardık. Kutu Bıdık’ın.",
+      "Taç ışıldadı, sohbet gözünü kıstı.",
+      "Ramy, taç takınca çay soğumuyor. Denedik.",
+      "Bu tacın yanında bir gülümseme ikramımız."
+    ]
+  },
+  {
+    "amount": 300,
+    "title": "ALTIN SELAM",
+    "color": "#ffda70",
+    "mark": "❧",
+    "lines": [
+      "{name}, adını altınla yazdık. Kalem ödünç.",
+      "Ramy, defne yapraklarını çaya atma!",
+      "{name}, adını küçük yazdık. Ekran itiraz etti.",
+      "Altın efekt geldi, Bıdık güneş gözlüğü arıyor.",
+      "Defneler birleşti. Montajı sohbet yaptı.",
+      "Altın alkış hazır. Fişini isteyen?",
+      "{name}, bu selamın parlaklığı yüzde yüz.",
+      "Altın yapraklar uçuştu. Süpürge kimin sırası?",
+      "Ramy, bu yazı parlıyor diye ekranı silme.",
+      "{name}, altın çerçeve tamam. Poz vermek serbest."
+    ]
+  },
+  {
+    "amount": 200,
+    "title": "SAHNE SENİN",
+    "color": "#d5eaff",
+    "mark": "✧",
+    "lines": [
+      "{name}, spotu sana çevirdik. Ramy gölgede kaldı.",
+      "Işıkçı hazırım dedi. Işıkçı da Ramy.",
+      "{name}, sahne senin. Kumanda kimdeydi?",
+      "Sohbet, prova bitti. Alkış gerçek!",
+      "Spotu açınca Bıdık güneş doğdu sandı.",
+      "{name}, adını anons ettik. Yankı hâlâ dönüyor.",
+      "Sahne alkışı hazır, kırmızı halı ütüde.",
+      "Ramy, ışığı biraz kıs. Hepimiz parladık.",
+      "{name}, bu alkışı duyunca mikrofon dik oturdu.",
+      "Spotlar açıldı, Bıdık gölgeye taşındı."
+    ]
+  },
+  {
+    "amount": 100,
+    "title": "SICAK BİR ALKIŞ",
+    "color": "#eeb584",
+    "mark": "✦",
+    "lines": [
+      "{name}, çay hazırdı, alkış eksikti!",
+      "Bu alkışın desibelini komşular ölçer.",
+      "Bıdık yerinden kalkmadı ama kuyruğu katıldı.",
+      "{name}, mikrofonu açtık. Alkıştan seni duyamıyoruz.",
+      "Bu güzelliği çayın yanına koyduk.",
+      "Ramy, gülümsemeyi de yayına ver!",
+      "{name}, kocaman sağ ol. Çay da bizden, hayali de.",
+      "Sohbet, alkışı tek elle denemeyin.",
+      "{name}, yayın bir anda pazar kahvaltısına döndü.",
+      "Bıdık teşekkür etmemi istedi. Kendisi molada."
+    ]
+  }
+];
 const stageMessages = new Map();
 function selectStageMessage(stage, name) {
   const previous = stageMessages.get(stage.amount);
