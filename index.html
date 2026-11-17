@@ -228,7 +228,12 @@ const bidikMoves = [
     [
       "Teşekkür edecektim, dilim sürçtü.",
       "Dil dışarı, moral yukarı!",
-      "Bu da benim imza pozum."
+      "Bu da benim imza pozum.",
+      "Dilimi tuttum… Üç saniye dayanabildim.",
+      "Ciddi duracaktım, dilim izin vermedi.",
+      "Dilim yayına benden önce bağlandı.",
+      "Bu pozun ciddiyeti yüzde sıfır.",
+      "Ramy, dilimi de kadraja al!"
     ]
   ],
   [
@@ -237,7 +242,12 @@ const bidikMoves = [
     [
       "Bana mı geldi? Bir daha söyle.",
       "Kulağım sende, kafam biraz yana.",
-      "Bir saniye, şaşırma açımı ayarlıyorum."
+      "Bir saniye, şaşırma açımı ayarlıyorum.",
+      "Kafam yana kaydı, sevincim yerinde.",
+      "Bu açıdan mama kabı daha büyük görünüyor.",
+      "Böyle bakınca daha ikna edici miyim?",
+      "Kafayı çevirdim, kulaklar hâlâ yayında.",
+      "Şu an düşünüyormuş gibi yapıyorum."
     ]
   ],
   [
@@ -246,7 +256,12 @@ const bidikMoves = [
     [
       "Aramızda kalsın, çok sevindim.",
       "Bu göz kırpma sana özel.",
-      "Bir gözüm sende, bir gözüm mamada."
+      "Bir gözüm sende, bir gözüm mamada.",
+      "Gözüm kırpıldı, sırrımız kayda geçti.",
+      "Ramy görmeden bir göz kırpayım.",
+      "Sol göz mesaiyi erken bitirdi.",
+      "{name}, göz kırpma benden, gülümseme senden.",
+      "Bu bakışın altyazısı ‘iyi ki geldin’."
     ]
   ],
   [
@@ -255,7 +270,12 @@ const bidikMoves = [
     [
       "Çak bi’ pati, {name}!",
       "Pati selamı yola çıktı!",
-      "Ekrana bir pati bıraktım."
+      "Ekrana bir pati bıraktım.",
+      "El sıkışamıyorum, pati teklif ediyorum.",
+      "Pati teslim edildi. İmza gerekmiyor.",
+      "Ramy, şu patiye bir yakın plan!",
+      "{name}, sana bir pati, ekrana iki tık!",
+      "Patiyi uzattım, kamera geri çekildi."
     ]
   ],
   [
@@ -264,7 +284,12 @@ const bidikMoves = [
     [
       "Bu işte mama kokusu var.",
       "Bir koklayayım… Evet, bu destek gerçek.",
-      "Burnuma güzel haberler geliyor."
+      "Burnuma güzel haberler geliyor.",
+      "Burnum canlı yayında, kulaklar yedekte.",
+      "Kokladım. Bu yayında keyif var.",
+      "Mama değilse niye bu kadar güzel kokuyor?",
+      "Bir saniye, burun teyidi alıyorum.",
+      "Ben bu haberi burnumdan aldım."
     ]
   ],
   [
@@ -273,7 +298,12 @@ const bidikMoves = [
     [
       "Ramy, buradan sonrasını sen biliyorsun.",
       "Mama kabı toplantıya çağrıldı.",
-      "Kâse boş, keyfim yerinde!"
+      "Kâse boş, keyfim yerinde!",
+      "Kâseyi üç kere kontrol ettim. Bilim böyle işler.",
+      "Kâse boş ama yankısı çok güzel.",
+      "Kâseyle aramızda derin bir sessizlik var.",
+      "Ramy, kâse bugün de dekor mu?",
+      "Kâseye baktım. Kâse de bana baktı."
     ]
   ],
   [
@@ -282,7 +312,12 @@ const bidikMoves = [
     [
       "Uyuyordum… Kim mama dedi?",
       "Uyku molası tamam, Bıdık görev başında.",
-      "Duymadım sandınız ama kulağım sizde."
+      "Duymadım sandınız ama kulağım sizde.",
+      "Rüyamda mama vardı. Devamı yayında.",
+      "Uyandım ama yastığa hâlâ bağlıyım.",
+      "Uyku modundan pati moduna geçtim.",
+      "Bir göz açıldı. Diğeri beş dakika istiyor.",
+      "Kim sevindi? Ben. Kim uykulu? Yine ben."
     ]
   ],
   [
@@ -291,7 +326,12 @@ const bidikMoves = [
     [
       "Gece vardiyasından teşekkürler.",
       "Esnemek serbest, sevinmek mecburi!",
-      "Bir esneme, bir pati selamı."
+      "Bir esneme, bir pati selamı.",
+      "Bu esneme tamamen profesyonel.",
+      "Yayın güzel, vardiya biraz geç.",
+      "Esnerken teşekkür etmek de bir yetenek.",
+      "Bir esneme molası verdim, döndüm.",
+      "Gözler yarıya indi, keyif tam kadro."
     ]
   ]
 ];
@@ -303,9 +343,13 @@ function nextBidikMoment(name, requestedMove) {
   const [move, symbol, lines] = bidikMoves.find(([id]) => id === requestedMove) ||
     available[Math.floor(Math.random() * available.length)];
   previousBidikMove = move;
-  const choices = lines.filter(line => line !== bidikRepliks.get(move));
+
+  const previous = bidikRepliks.get(move);
+  const remaining = previous?.remaining.length ? previous.remaining : [...lines];
+  const choices = remaining.length > 1 ? remaining.filter(line => line !== previous?.line) : remaining;
   const line = choices[Math.floor(Math.random() * choices.length)];
-  bidikRepliks.set(move, line);
+  remaining.splice(remaining.indexOf(line), 1);
+  bidikRepliks.set(move, {line, remaining});
   return {move, symbol, text: line.replace('{name}', () => name)};
 }
 const CROWN_DURATION_MS = 2400;
