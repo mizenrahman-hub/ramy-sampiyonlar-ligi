@@ -803,7 +803,7 @@ function renderChatStar(board, label, star) {
     }
   });
 }
-async function refreshLeaders(){if(refreshing)return;refreshing=true;try{const response=await fetch(API,{cache:'no-store'});if(!response.ok)throw Error('API '+response.status);const data=await response.json();renderRanks('daily',data.day);renderRanks('weekly',data.week);renderChatStar('daily','Günün Sohbet Yıldızı',data.chat?.day);renderChatStar('weekly','Haftanın Sohbet Yıldızı',data.chat?.week);if(q.has('finale'))showWeekFinale(data);else if(!q.has('test'))updateAlerts(data.recent,data)}catch(err){console.warn('Liderlik verileri alınamadı',err)}finally{refreshing=false}}refreshLeaders();setInterval(refreshLeaders,15000);if(q.has('test')){
+async function refreshLeaders(){if(refreshing)return;refreshing=true;try{const response=await fetch(API,{cache:'no-store'});if(!response.ok)throw Error('API '+response.status);const data=await response.json();renderRanks('daily',data.day);renderRanks('weekly',data.week);renderChatStar('daily','Günün Sohbet Yıldızı',data.chat?.day);renderChatStar('weekly','Haftanın Sohbet Yıldızı',data.chat?.week);if(q.has('finale'))showWeekFinale(data);else if(!q.has('test'))updateAlerts(data.recent,data)}catch(err){console.warn('Liderlik verileri alınamadı',err)}finally{refreshing=false}}refreshLeaders();setInterval(refreshLeaders,60000);if(q.has('test')){
   const button=document.createElement('button');
   button.textContent=q.has('chat-crown')?'Beyaz tacı göster':q.has('bidik')?'Bıdık’ı göster':'Kutlamayı sesli oynat';
   button.style.cssText='position:fixed;bottom:8%;left:50%;transform:translateX(-50%);z-index:5;padding:12px 20px;border:0;border-radius:8px;background:#ffdc83;color:#211608;font-weight:bold';
